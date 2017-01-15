@@ -14,12 +14,14 @@ platform:
     - x64
 
 environment:
-    OFF: -DBUILD_PYTHON=OFF -DBUILD_MEX=OFF
+    OFF: -DBUILD_PYTHON=OFF -DBUILD_JULIA=OFF -DBUILD_MEX=OFF
     matrix:
         - PYTHON: C:\Python27
           LANG: -DBUILD_PYTHON=ON
         - PYTHON: C:\Python35
           LANG: -DBUILD_PYTHON=ON
+        - JULIA: C:\projects\julia-%platform%
+          LANG: -DBUILD_JULIA=ON -DJULIA_EXECUTABLE=%JULIA%\bin\julia
 
 matrix:
     fast_finish: true
@@ -27,7 +29,20 @@ matrix:
 init:
     - INSTALL_DIR: C:\projects\segyio-install
 
+cache:
+    - C:\projects\julia-x86
+    - C:\projects\julia-x64
+
 install:
+  - IF "%platform%" == "x86" set JULIADOWNLOAD=julialang/bin/winnt/x86/0.4/julia-0.4-latest-win32.exe
+  - IF "%platform%" == "x64" set JULIADOWNLOAD=julialang/bin/winnt/x64/0.4/julia-0.4-latest-win64.exe
+  - IF DEFINED JULIA (
+        IF NOT EXIST "%JULIA%" (
+            curl -vsf http://s3.amazonaws.com/%JULIADOWNLOAD% -o C:\projects\julia-installer.exe
+            && C:\projects\julia-installer.exe /S /D=%JULIA%
+            && %JULIA%\bin\julia -e "Pkg.add(\"BaseTestNext\")"
+        )
+    )
   - IF DEFINED PYTHON (IF "%platform%" == "x64" SET PYTHON=%PYTHON%-x64)
   - IF DEFINED PYTHON %PYTHON%\python -m pip install --user numpy
 

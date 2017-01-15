@@ -7,6 +7,7 @@ endif ()
 
 option(BUILD_SHARED_LIBS "Build language bindings shared" OFF)
 option(BUILD_PYTHON "Build Python wrappers"     ON)
+option(BUILD_JULIA  "Build Julia wrappers"      OFF)
 option(BUILD_MEX    "Build Matlab mex files"    OFF)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -40,5 +41,6 @@ add_subdirectory(lib)
 # language bindings
 add_subdirectory(mex)
 add_subdirectory(python)
+add_subdirectory(julia)
 
 add_subdirectory(applications)
