@@ -1,2 +1,2 @@
 numpy == 1.10
-matplotlib
+matplotlib==2.1.0
