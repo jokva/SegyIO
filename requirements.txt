@@ -1,2 +1,2 @@
-numpy >= 1.10
-urlib
+numpy == 1.10
+matplotlib
