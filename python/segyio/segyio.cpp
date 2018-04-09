@@ -281,7 +281,16 @@ int init( segyiofd* self, PyObject* args, PyObject* ) {
     const long trace0 = segy_trace0( binary );
     const int samplecount = segy_samples( binary );
     const int format = segy_format( binary );
-    const int trace_bsize = segy_trace_bsize( samplecount );
+    int trace_bsize = segy_trsize( format, samplecount );
+
+    /* fall back to assuming 4-byte ibm float if the format field is rubbish */
+    if( trace_bsize < 0 ) trace_bsize = segy_trace_bsize( samplecount );
+
+    /*
+     * if set_format errors, it's because the format-field in the binary header
+     * is 0 or some other garbage. if so, assume the file is 4-byte ibm float
+     */
+   segy_set_format( fd, format );
 
     if( tracecount == 0 ) {
         const int err = segy_traces( fd, &tracecount, trace0, trace_bsize );

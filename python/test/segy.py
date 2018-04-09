@@ -1129,3 +1129,12 @@ def test_no_16bit_overflow_tracecount(tmpdir):
                     segyio.TraceField.CROSSLINE_3D: 10,
                     segyio.TraceField.offset: 1,
         }
+
+@tmpfiles('test-data/f3.sgy')
+def test_open_2byte_int_format(tmpdir):
+    with segyio.open(tmpdir / 'f3.sgy') as f:
+        assert int(f.format)  == 3
+        assert len(f.samples) == 75
+        assert f.tracecount   == 414
+        assert list(f.ilines) == list(range(111, 111 + 23))
+        assert list(f.xlines) == list(range(875, 875 + 18))
