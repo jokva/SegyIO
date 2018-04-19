@@ -62,11 +62,11 @@ class Trace:
         shape = self._file.samples.shape
 
         if buf is None:
-            buf = np.empty(shape=shape, dtype=np.single)
+            buf = np.empty(shape=shape, dtype=self._file.dtype)
         elif not isinstance(buf, np.ndarray):
             raise TypeError("Buffer must be None or numpy.ndarray")
         elif buf.dtype != np.single:
-            buf = np.empty(shape=shape, dtype=np.single)
+            buf = np.empty(shape=shape, dtype=self._file.dtype)
 
         return buf
 
@@ -85,7 +85,7 @@ class Trace:
         :type buf: ?
         :type segy: segyio.SegyFile
         """
-        if isinstance(buf, np.ndarray) and buf.dtype != np.single:
+        if isinstance(buf, np.ndarray) and buf.dtype != segy.dtype:
             raise TypeError("Numpy array must be of type single")
 
         segy.xfd.puttr(traceno, buf)
