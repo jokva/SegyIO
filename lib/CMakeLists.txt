@@ -1,4 +1,4 @@
-project(libsegyio C)
+project(libsegyio C CXX)
 
 set(SOURCE_FILES src/segy.c)
 
@@ -69,6 +69,10 @@ install(DIRECTORY include/ DESTINATION include)
 install(EXPORT segyio DESTINATION share/segyio/cmake FILE segyio-config.cmake)
 export(TARGETS segyio-static segyio-shared FILE segyio-config.cmake)
 
+if(EXPERIMENTAL)
+    install(DIRECTORY experimental/ DESTINATION include)
+endif()
+
 if (NOT BUILD_TESTING)
     return ()
 endif ()
@@ -79,10 +83,13 @@ configure_file(${testdata}/text.sgy  test-data/text.sgy              COPYONLY)
 
 add_executable(c.segy test/testsuite.cpp
                       test/segy.cpp
-                      test/mmap.cpp)
-target_include_directories(c.segy PRIVATE src)
+                      test/mmap.cpp
+                      test/segyio-cpp.cpp
+)
+target_include_directories(c.segy PRIVATE src experimental)
 target_link_libraries(c.segy catch2 segyio)
 target_compile_options(c.segy BEFORE PRIVATE
                        ${c++11} $<$<CONFIG:Debug>:${warnings-c}> ${mmap})
-add_test(NAME c.segy COMMAND c.segy ~[mmap] [c.segy])
+add_test(NAME c.segy      COMMAND c.segy ~[mmap] [c.segy])
 add_test(NAME c.segy.mmap COMMAND c.segy [mmap])
+add_test(NAME cpp.segy    COMMAND c.segy [c++])
